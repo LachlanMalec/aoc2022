@@ -11,7 +11,11 @@ fn main() {
 
     elves_sum_array_sorted.sort();
 
-    println!("{}", elves_sum_array_sorted[elves_sum_array_sorted.len() - 1]);
+    let top_three_elves: Vec<i32> = elves_sum_array_sorted[elves_sum_array_sorted.len() - 3..].to_vec();
+
+    let top_three_elves_sum = top_three_elves.iter().sum::<i32>();
+
+    println!("{}", top_three_elves_sum);
 }
 
 fn parse_string(input: &str) -> Vec<Vec<i32>> {
