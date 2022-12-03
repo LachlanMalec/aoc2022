@@ -1,19 +1,19 @@
 use std::fs;
 
 fn main() {
-    let move_combinations: Vec<String> = parse_challenge_data();
+    let move_combinations: Vec<String> = read_challenge_data();
 
-    // in the form of (challenger_move_key, defender_move_key, move_value)
-    let move_values: [(char, char, i32); 3] = [
-        ('A', 'X', 1), // rock
-        ('B', 'Y', 2), // paper
-        ('C', 'Z', 3), // scissors
+    let move_values: [(Move, i32); 3] = [
+        (Move::Rock, 1),
+        (Move::Paper, 2),
+        (Move::Scissors, 3),
     ];
 
-    let win_conditions: [(char, char); 3] = [
-        ('C', 'X'), // rock beats scissors
-        ('A', 'Y'), // paper beats rock
-        ('B', 'Z'), // scissors beats paper
+    // in the form of (winning, losing)
+    let win_conditions: [(Move, Move); 3] = [
+        (Move::Rock, Move::Scissors),
+        (Move::Paper, Move::Rock),
+        (Move::Scissors, Move::Paper),
     ];
 
     let win_value: i32 = 6;
@@ -34,6 +34,7 @@ fn main() {
     );
 }
 
+#[derive(PartialEq)]
 enum Move {
     Rock,
     Paper,
@@ -49,57 +50,39 @@ fn determine_move(move_key: char) -> Move {
     }
 }
 
-fn parse_challenge_data() -> Vec<String> {
+fn read_challenge_data() -> Vec<String> {
     let challenge_data = fs::read_to_string("data").expect("Unable to read file");
     challenge_data.lines().map(|s| s.to_string()).collect()
 }
 
 fn part_one(
     move_combinations: Vec<String>,
-    win_conditions: [(char, char); 3],
-    move_values: [(char, char, i32); 3],
+    win_conditions: [(Move, Move); 3],
+    move_values: [(Move, i32); 3],
     win_value: i32,
     draw_value: i32,
 ) -> i32 {
     let mut total_score: i32 = 0;
 
     for move_combination in move_combinations {
-        let challenger_move = move_combination.chars().nth(0).unwrap();
-        let your_move = move_combination.chars().nth(2).unwrap();
+        let challenger_move = determine_move(move_combination.chars().nth(0).unwrap());
+        let my_move = determine_move(move_combination.chars().nth(2).unwrap());
 
-        total_score += match move_values
-            .iter()
-            .find(|(_, your_move_key, _)| *your_move_key == your_move)
-        {
-            Some((_, _, move_value)) => *move_value,
+        total_score += match move_values.iter().find(|(move_value_key, _)| move_value_key == &my_move) {
+            Some((_, my_move_value)) => my_move_value,
             None => panic!("Invalid move"),
         };
 
         total_score += match win_conditions
             .iter()
-            .find(|(challenger_move_key, your_move_key)| {
-                *challenger_move_key == challenger_move && *your_move_key == your_move
-            }) {
+            .find(|(winning_move, losing_move)| winning_move == &my_move && losing_move == &challenger_move) {
             Some(_) => win_value,
             None => 0,
         };
 
-        total_score += match move_values
-            .iter()
-            .find(|(challenger_move_key, your_move_key, _)| {
-                *challenger_move_key == challenger_move && *your_move_key == your_move
-            }) {
-            Some(_) => draw_value,
-            None => 0,
-        };
-
-        total_score += match move_values
-            .iter()
-            .find(|(challenger_move_key, your_move_key, _)| {
-                *challenger_move_key == your_move && *your_move_key == challenger_move
-            }) {
-            Some(_) => draw_value,
-            None => 0,
+        total_score += match my_move == challenger_move {
+            true => draw_value,
+            false => 0,
         };
     }
 
