@@ -1,16 +1,16 @@
 use std::fs;
 
 fn main() {
-    let move_combinations: Vec<String> = read_challenge_data();
+    let game_data: Vec<String> = read_challenge_data();
 
-    let move_values: [(Move, i32); 3] = [
+    const MOVE_VALUES: [(Move, i32); 3] = [
         (Move::Rock, 1),
         (Move::Paper, 2),
         (Move::Scissors, 3),
     ];
 
     // in the form of (winning, losing)
-    let win_conditions: [(Move, Move); 3] = [
+    const WIN_CONDITIONS: [(Move, Move); 3] = [
         (Move::Rock, Move::Scissors),
         (Move::Paper, Move::Rock),
         (Move::Scissors, Move::Paper),
@@ -20,17 +20,30 @@ fn main() {
 
     let draw_value: i32 = 3;
 
-    let total_score_following_guide: i32 = part_one(
-        move_combinations,
-        win_conditions,
-        move_values,
+    let part_one_score: i32 = part_one(
+        game_data.clone(),
+        WIN_CONDITIONS,
+        MOVE_VALUES,
         win_value,
         draw_value,
     );
 
     println!(
-        "Total score following guide: {}",
-        total_score_following_guide
+        "Part one score: {}",
+        part_one_score
+    );
+
+    let part_two_score: i32 = part_two(
+        game_data.clone(),
+        WIN_CONDITIONS,
+        MOVE_VALUES,
+        win_value,
+        draw_value,
+    );
+
+    println!(
+        "Part two score : {}",
+        part_two_score
     );
 }
 
@@ -41,12 +54,27 @@ enum Move {
     Scissors,
 }
 
+enum Result {
+    Win,
+    Draw,
+    Loss,
+}
+
 fn determine_move(move_key: char) -> Move {
     match move_key {
         'A' | 'X' => Move::Rock,
         'B' | 'Y' => Move::Paper,
         'C' | 'Z' => Move::Scissors,
         _ => panic!("Invalid move key"),
+    }
+}
+
+fn determine_result(result_key: char) -> Result {
+    match result_key {
+        'Z' => Result::Win,
+        'Y' => Result::Draw,
+        'X' => Result::Loss,
+        _ => panic!("Invalid result key"),
     }
 }
 
@@ -87,4 +115,48 @@ fn part_one(
     }
 
     return total_score;
+}
+
+fn part_two(
+    game_plan: Vec<String>,
+    win_conditions: [(Move, Move); 3],
+    move_values: [(Move, i32); 3],
+    win_value: i32,
+    draw_value: i32,
+) -> i32 {
+    let mut total_score: i32 = 0;
+
+    for game_result in game_plan {
+        let challenger_move = determine_move(game_result.chars().nth(0).unwrap());
+        let game_outcome = determine_result(game_result.chars().nth(2).unwrap());
+
+        let my_move = match game_outcome {
+            Result::Win => match win_conditions
+                .iter()
+                .find(|(_,losing_move)| losing_move == &challenger_move) {
+                Some((winning_move, _)) => {
+                    total_score += win_value;
+                    winning_move
+                },
+                None => panic!("Invalid move"),
+            },
+            Result::Draw => {
+                total_score += draw_value;
+                &challenger_move
+            },
+            Result::Loss => match win_conditions
+                .iter()
+                .find(|(winning_move, _)| winning_move == &challenger_move) {
+                Some((_, losing_move)) => losing_move,
+                None => panic!("Invalid move"),
+            },
+        };
+
+        total_score += match move_values.iter().find(|(move_value_key, _)| move_value_key == my_move) {
+            Some((_, my_move_value)) => my_move_value,
+            None => panic!("Invalid move"),
+        };
+    }
+
+    total_score
 }
