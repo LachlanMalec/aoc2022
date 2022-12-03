@@ -34,6 +34,21 @@ fn main() {
     );
 }
 
+enum Move {
+    Rock,
+    Paper,
+    Scissors,
+}
+
+fn determine_move(move_key: char) -> Move {
+    match move_key {
+        'A' | 'X' => Move::Rock,
+        'B' | 'Y' => Move::Paper,
+        'C' | 'Z' => Move::Scissors,
+        _ => panic!("Invalid move key"),
+    }
+}
+
 fn parse_challenge_data() -> Vec<String> {
     let challenge_data = fs::read_to_string("data").expect("Unable to read file");
     challenge_data.lines().map(|s| s.to_string()).collect()
