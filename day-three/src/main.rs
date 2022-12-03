@@ -40,11 +40,9 @@ impl Rucksack {
 fn parse_challenge_data(challenge_data: String) -> Vec<Rucksack> {
     challenge_data.lines()
         .map(|line| {
-            let compartment_one = line.chars().take(line.chars().count() / 2).collect();
-            let compartment_two = line.chars().skip(line.chars().count() / 2).collect();
             Rucksack {
-                compartment_one,
-                compartment_two,
+                compartment_one: line.chars().take(line.chars().count() / 2).collect(),
+                compartment_two: line.chars().skip(line.chars().count() / 2).collect(),
             }
         })
         .collect()
