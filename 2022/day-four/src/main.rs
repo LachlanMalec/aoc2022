@@ -26,32 +26,39 @@ fn parse_assignment(assignment: &str) -> (u32, u32) {
     (first, second)
 }
 
-fn determine_assignment_total_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> bool {
-    let first_assignment = assignment_pair.0;
-    let second_assignment = assignment_pair.1;
+#[derive(PartialEq)]
+enum AssignmentOverlap {
+    Total,
+    Partial,
+    None,
+}
 
-    let first_assignment_start = first_assignment.0;
-    let first_assignment_end = first_assignment.1;
+fn determine_assignment_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> AssignmentOverlap {
+    let a1 = assignment_pair.0;
+    let a2 = assignment_pair.1;
 
-    let second_assignment_start = second_assignment.0;
-    let second_assignment_end = second_assignment.1;
-
-    if first_assignment_start <= second_assignment_start
-        && second_assignment_end <= first_assignment_end
-        || first_assignment_start >= second_assignment_start
-            && second_assignment_end >= first_assignment_end
-    {
-        return true;
+    match (a1.0, a1.1, a2.0, a2.1) {
+        (a1_lower, a1_upper, a2_lower, a2_upper) if a1_lower <= a2_lower && a1_upper >= a2_upper => {
+            AssignmentOverlap::Total
+        }
+        (a1_lower, a1_upper, a2_lower, a2_upper) if a1_lower >= a2_lower && a1_upper <= a2_upper => {
+            AssignmentOverlap::Total
+        }
+        (a1_lower, a1_upper, a2_lower, _) if a1_lower <= a2_lower && a1_upper >= a2_lower => {
+            AssignmentOverlap::Partial
+        }
+        (a1_lower, a1_upper, _, a2_upper) if a1_lower <= a2_upper && a1_upper >= a2_upper => {
+            AssignmentOverlap::Partial
+        }
+        _ => AssignmentOverlap::None,
     }
-
-    false
 }
 
 fn part_one(assignment_pairs: &Vec<((u32, u32), (u32, u32))>) -> u32 {
     let mut number_of_total_overlaps = 0;
 
     for assignment_pair in assignment_pairs {
-        if determine_assignment_total_overlap(*assignment_pair) {
+        if determine_assignment_overlap(*assignment_pair) == AssignmentOverlap::Total {
             number_of_total_overlaps += 1;
         }
     }
