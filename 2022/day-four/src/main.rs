@@ -35,10 +35,10 @@ enum AssignmentOverlap {
 }
 
 fn determine_assignment_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> AssignmentOverlap {
-    let a1 = assignment_pair.0;
-    let a2 = assignment_pair.1;
+    let assignment_one = assignment_pair.0;
+    let assignment_two = assignment_pair.1;
 
-    match (a1.0, a1.1, a2.0, a2.1) {
+    match (assignment_one.0, assignment_one.1, assignment_two.0, assignment_two.1) {
         (a1_lower, a1_upper, a2_lower, a2_upper) if a1_lower <= a2_lower && a1_upper >= a2_upper => {
             AssignmentOverlap::Total
         }
