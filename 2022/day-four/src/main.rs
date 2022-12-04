@@ -26,7 +26,7 @@ fn parse_assignment(assignment: &str) -> (u32, u32) {
     (first, second)
 }
 
-fn determine_assignment_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> bool {
+fn determine_assignment_total_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> bool {
     let first_assignment = assignment_pair.0;
     let second_assignment = assignment_pair.1;
 
@@ -51,7 +51,7 @@ fn part_one(assignment_pairs: &Vec<((u32, u32), (u32, u32))>) -> u32 {
     let mut number_of_total_overlaps = 0;
 
     for assignment_pair in assignment_pairs {
-        if determine_assignment_overlap(*assignment_pair) {
+        if determine_assignment_total_overlap(*assignment_pair) {
             number_of_total_overlaps += 1;
         }
     }
