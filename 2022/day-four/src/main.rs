@@ -48,13 +48,13 @@ fn determine_assignment_overlap(assignment_pair: ((u32, u32), (u32, u32))) -> bo
 }
 
 fn part_one(assignment_pairs: &Vec<((u32, u32), (u32, u32))>) -> u32 {
-    let mut number_of_overlaps = 0;
+    let mut number_of_total_overlaps = 0;
 
     for assignment_pair in assignment_pairs {
         if determine_assignment_overlap(*assignment_pair) {
-            number_of_overlaps += 1;
+            number_of_total_overlaps += 1;
         }
     }
 
-    number_of_overlaps
+    number_of_total_overlaps
 }
