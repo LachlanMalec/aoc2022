@@ -4,6 +4,7 @@ fn main() {
     let data = read_to_string("data").unwrap();
     let assignment_pairs = parse_data(&data);
     println!("Part 1: {}", part_one(&assignment_pairs));
+    println!("Part 2: {}", part_two(&assignment_pairs));
 }
 
 fn parse_data(data: &str) -> Vec<((u32, u32), (u32, u32))> {
@@ -64,4 +65,16 @@ fn part_one(assignment_pairs: &Vec<((u32, u32), (u32, u32))>) -> u32 {
     }
 
     number_of_total_overlaps
+}
+
+fn part_two(assignment_pairs: &Vec<((u32, u32), (u32, u32))>) -> u32 {
+    let mut number_of_overlaps = 0;
+
+    for assignment_pair in assignment_pairs {
+        if determine_assignment_overlap(*assignment_pair) != AssignmentOverlap::None {
+            number_of_overlaps += 1;
+        }
+    }
+
+    number_of_overlaps
 }
