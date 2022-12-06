@@ -3,10 +3,10 @@ use std::fs;
 fn main() {
     let datastream_buffer = fs::read("data").expect("Unable to read file");
 
-    println!("Marker position: {}", identify_marker_position(&datastream_buffer));
+    println!("Marker position: {}", identify_start_of_packet_marker_position(&datastream_buffer));
 }
 
-fn identify_marker_position(datastream_buffer: &[u8]) -> usize {
+fn identify_start_of_packet_marker_position(datastream_buffer: &[u8]) -> usize {
     let mut marker_position: Option<usize> = None;
     for (i, _) in datastream_buffer.iter().enumerate() {
         let mut unique_chars = 0;
